@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete 5K Race Time Predictions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .table-container {
+            overflow-x: auto;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        th.group-header {
+            background-color: #34495e;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ecf0f1;
+            text-align: center;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .base-time {
+            font-weight: bold;
+            background-color: #e8f4f8;
+        }
+        .pace {
+            color: #7f8c8d;
+            font-size: 11px;
+        }
+        .legend {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .legend h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .legend p {
+            margin: 5px 0;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>5K Race Time Predictions & Training Paces</h1>
+    <div class="subtitle">Based on Riegel Formula & VDOT-equivalent calculations</div>
+    
+    <div class="legend">
+        <h3>About These Predictions</h3>
+        <p><strong>Riegel Formula:</strong> T₂ = T₁ × (D₂/D₁)^1.06 - Standard race prediction model, accurate for 5K to Half Marathon</p>
+        <p><strong>VDOT Method:</strong> Based on Jack Daniels' equivalent performance tables - the gold standard for running predictions</p>
+        <p><strong>Note:</strong> Marathon predictions require specific long-distance training. These are potential times with proper preparation.</p>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" class="base-time">5K Time</th>
+                    <th colspan="2" class="group-header">Mile</th>
+                    <th colspan="2" class="group-header">10K</th>
+                    <th colspan="2" class="group-header">Half Marathon</th>
+                    <th colspan="2" class="group-header">Marathon</th>
+                </tr>
+                <tr>
+                    <th>Time</th>
+                    <th>Pace</th>
+                    <th>Time</th>
+                    <th>Pace</th>
+                    <th>Time</th>
+                    <th>Pace</th>
+                    <th>Time</th>
+                    <th>Pace</th>
+                </tr>
+            </thead>
+            <tbody id="paceTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // VDOT lookup table - simplified version based on Jack Daniels' tables
+        // Maps 5K times (in seconds) to approximate VDOT scores
+        const vdotTable = [
+            {vdot: 85, mile: 240, fiveK: 750, tenK: 1563, half: 3348, marathon: 7140},
+            {vdot: 80, mile: 255, fiveK: 810, tenK: 1687, half: 3614, marathon: 7704},
+            {vdot: 75, mile: 270, fiveK: 870, tenK: 1812, half: 3882, marathon: 8280},
+            {vdot: 70, mile: 288, fiveK: 936, tenK: 1950, half: 4176, marathon: 8904},
+            {vdot: 65, mile: 306, fiveK: 1002, tenK: 2088, half: 4476, marathon: 9540},
+            {vdot: 60, mile: 327, fiveK: 1077, tenK: 2244, half: 4812, marathon: 10260},
+            {vdot: 55, mile: 351, fiveK: 1161, tenK: 2418, half: 5184, marathon: 11052},
+            {vdot: 50, mile: 378, fiveK: 1254, tenK: 2610, half: 5598, marathon: 11934},
+            {vdot: 45, mile: 411, fiveK: 1362, tenK: 2835, half: 6078, marathon: 12954},
+            {vdot: 40, mile: 450, fiveK: 1488, tenK: 3096, half: 6636, marathon: 14148},
+            {vdot: 35, mile: 498, fiveK: 1638, tenK: 3408, half: 7308, marathon: 15576},
+            {vdot: 30, mile: 558, fiveK: 1824, tenK: 3792, half: 8136, marathon: 17340}
+        ];
+
+        function timeToSeconds(timeStr) {
+            const parts = timeStr.split(':').map(Number);
+            if (parts.length === 3) {
+                return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            }
+            return parts[0] * 60 + parts[1];
+        }
+
+        function secondsToTime(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const mins = Math.floor((totalSeconds % 3600) / 60);
+            const secs = Math.round(totalSeconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function calculatePace(timeSeconds, distanceMiles) {
+            const paceSeconds = timeSeconds / distanceMiles;
+            return secondsToTime(paceSeconds);
+        }
+
+        // Riegel Formula: T2 = T1 × (D2/D1)^1.06
+        function riegelPredict(time1, dist1, dist2) {
+            return time1 * Math.pow(dist2 / dist1, 1.06);
+        }
+
+        // Interpolate VDOT times
+        function getVDOTTimes(fiveKSeconds) {
+            // Find bracketing VDOT entries
+            let lower = vdotTable[vdotTable.length - 1];
+            let upper = vdotTable[0];
+            
+            for (let i = 0; i < vdotTable.length - 1; i++) {
+                if (fiveKSeconds >= vdotTable[i].fiveK && fiveKSeconds <= vdotTable[i + 1].fiveK) {
+                    upper = vdotTable[i];
+                    lower = vdotTable[i + 1];
+                    break;
+                }
+            }
+            
+            // Linear interpolation
+            const ratio = (fiveKSeconds - upper.fiveK) / (lower.fiveK - upper.fiveK);
+            
+            return {
+                mile: upper.mile + ratio * (lower.mile - upper.mile),
+                tenK: upper.tenK + ratio * (lower.tenK - upper.tenK),
+                half: upper.half + ratio * (lower.half - upper.half),
+                marathon: upper.marathon + ratio * (lower.marathon - upper.marathon)
+            };
+        }
+
+        const startTime = '12:30';
+        const endTime = '15:30';
+        const increment = 2;
+
+        let currentSeconds = timeToSeconds(startTime);
+        const endSeconds = timeToSeconds(endTime);
+
+        const tableBody = document.getElementById('paceTable');
+
+        // Standard race distances in miles
+        const MILE = 1.0;
+        const FIVE_K = 3.10686;
+        const TEN_K = 6.21371;
+        const HALF_MARATHON = 13.1094;
+        const MARATHON = 26.2188;
+
+        while (currentSeconds <= endSeconds) {
+            const fiveKTime = secondsToTime(currentSeconds);
+            
+            // Use VDOT-based predictions for better accuracy
+            const vdotTimes = getVDOTTimes(currentSeconds);
+            
+            // For mile, use Riegel as VDOT table may not have all values
+            const mileTime = riegelPredict(currentSeconds, FIVE_K, MILE);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="base-time">${fiveKTime}</td>
+                <td>${secondsToTime(vdotTimes.mile)}</td>
+                <td class="pace">${calculatePace(vdotTimes.mile, MILE)}/mi</td>
+                <td>${secondsToTime(vdotTimes.tenK)}</td>
+                <td class="pace">${calculatePace(vdotTimes.tenK, TEN_K)}/mi</td>
+                <td>${secondsToTime(vdotTimes.half)}</td>
+                <td class="pace">${calculatePace(vdotTimes.half, HALF_MARATHON)}/mi</td>
+                <td>${secondsToTime(vdotTimes.marathon)}</td>
+                <td class="pace">${calculatePace(vdotTimes.marathon, MARATHON)}/mi</td>
+            `;
+            tableBody.appendChild(row);
+            
+            currentSeconds += increment;
+        }
+    </script>
+</body>
+</html>

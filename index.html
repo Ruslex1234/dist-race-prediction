@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Race Prediction Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        
+        .card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .card-features {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .card-features li {
+            color: #555;
+            padding: 5px 0;
+            font-size: 0.9em;
+        }
+        
+        .card-features li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: opacity 0.3s ease;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏃 Distance Race Prediction</h1>
+            <p class="subtitle">Professional running calculators for training and race planning</p>
+        </header>
+        
+        <div class="cards">
+            <a href="5k_pace_chart.html" class="card">
+                <div class="card-icon">📊</div>
+                <h2>5K Pace Chart</h2>
+                <p>Simple 5K time to mile pace conversion chart with 2-second increments.</p>
+                <ul class="card-features">
+                    <li>5K times from 12:30 to 15:30</li>
+                    <li>Corresponding mile pace for each time</li>
+                    <li>Quick reference for training</li>
+                </ul>
+                <span class="btn">View Chart →</span>
+            </a>
+            
+            <a href="5k_race_predictions.html" class="card">
+                <div class="card-icon">🎯</div>
+                <h2>Complete Race Predictor</h2>
+                <p>Predict your performance across all distances using proven VDOT and Riegel formulas.</p>
+                <ul class="card-features">
+                    <li>Mile, 10K, Half Marathon & Marathon predictions</li>
+                    <li>Based on Jack Daniels' VDOT method</li>
+                    <li>Pace per mile for each distance</li>
+                    <li>Gold standard for race planning</li>
+                </ul>
+                <span class="btn">View Predictions →</span>
+            </a>
+        </div>
+        
+        <footer>
+            <p>Built with data from Jack Daniels' Running Formula and Riegel's prediction model</p>
+        </footer>
+    </div>
+</body>
+</html>

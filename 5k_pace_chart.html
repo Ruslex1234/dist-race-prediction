@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5K Time to Mile Pace Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>5K Time to Mile Pace Conversion</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>5K Time</th>
+                <th>Mile Pace</th>
+            </tr>
+        </thead>
+        <tbody id="paceTable"></tbody>
+    </table>
+
+    <script>
+        function timeToSeconds(timeStr) {
+            const [mins, secs] = timeStr.split(':').map(Number);
+            return mins * 60 + secs;
+        }
+
+        function secondsToTime(totalSeconds) {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = Math.round(totalSeconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function calculateMilePace(fiveKSeconds) {
+            // 5K = 3.10686 miles
+            const milesIn5K = 3.10686;
+            const pacePerMile = fiveKSeconds / milesIn5K;
+            return secondsToTime(pacePerMile);
+        }
+
+        const startTime = '12:30';
+        const endTime = '15:30';
+        const increment = 2; // seconds
+
+        let currentSeconds = timeToSeconds(startTime);
+        const endSeconds = timeToSeconds(endTime);
+
+        const tableBody = document.getElementById('paceTable');
+
+        while (currentSeconds <= endSeconds) {
+            const fiveKTime = secondsToTime(currentSeconds);
+            const milePace = calculateMilePace(currentSeconds);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${fiveKTime}</td>
+                <td>${milePace}/mi</td>
+            `;
+            tableBody.appendChild(row);
+            
+            currentSeconds += increment;
+        }
+    </script>
+</body>
+</html>
