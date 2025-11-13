@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runner Nutrition Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .table-container {
+            overflow-x: auto;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ecf0f1;
+            text-align: center;
+        }
+        td.weight-col {
+            font-weight: bold;
+            background-color: #e8f4f8;
+        }
+        td.calories-col {
+            background-color: #fff9e6;
+            font-weight: bold;
+        }
+        td.carbs-col {
+            background-color: #e8f5e9;
+        }
+        td.protein-col {
+            background-color: #e3f2fd;
+        }
+        td.fat-col {
+            background-color: #fff3e0;
+        }
+        .legend {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .legend h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .legend p {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .macro-breakdown {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .macro-item {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+        }
+        .macro-item h4 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .macro-item p {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .note {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 4px solid #2196f3;
+        }
+        .note p {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Home</a>
+    <h1>🏃 Runner Nutrition Calculator</h1>
+    <div class="subtitle">Optimal Macronutrient Distribution & Daily Calorie Needs for Runners</div>
+
+    <div class="legend">
+        <h3>Optimal Macronutrient Ratios for Runners</h3>
+        <p><strong>Based on sports nutrition research for endurance athletes:</strong></p>
+
+        <div class="macro-breakdown">
+            <div class="macro-item">
+                <h4>🌾 Carbohydrates: 60%</h4>
+                <p>Primary fuel source for endurance activities</p>
+                <p><strong>4 calories per gram</strong></p>
+            </div>
+            <div class="macro-item">
+                <h4>🥩 Protein: 20%</h4>
+                <p>Essential for muscle recovery and repair</p>
+                <p><strong>4 calories per gram</strong></p>
+            </div>
+            <div class="macro-item">
+                <h4>🥑 Fats: 20%</h4>
+                <p>Sustained energy and hormone regulation</p>
+                <p><strong>9 calories per gram</strong></p>
+            </div>
+        </div>
+
+        <div class="note">
+            <p><strong>📊 Calorie Calculation:</strong> Based on 17 calories per pound of body weight, which accounts for the high activity level of runners (training 5-7 days per week). This is for <strong>weight maintenance</strong>.</p>
+            <p><strong>💡 Note:</strong> Individual calorie needs may vary based on training volume, intensity, age, gender, and metabolism. Adjust based on your performance and weight goals.</p>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Weight (lbs)</th>
+                    <th>Daily Calories</th>
+                    <th>Carbs (g)<br><small>60%</small></th>
+                    <th>Protein (g)<br><small>20%</small></th>
+                    <th>Fat (g)<br><small>20%</small></th>
+                </tr>
+            </thead>
+            <tbody id="nutritionTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const tableBody = document.getElementById('nutritionTable');
+        const CALORIES_PER_POUND = 17; // For active runners
+        const CARB_PERCENTAGE = 0.60;
+        const PROTEIN_PERCENTAGE = 0.20;
+        const FAT_PERCENTAGE = 0.20;
+        const CALORIES_PER_GRAM_CARB = 4;
+        const CALORIES_PER_GRAM_PROTEIN = 4;
+        const CALORIES_PER_GRAM_FAT = 9;
+
+        // Generate nutrition data for weights from 100 to 400 lbs in 5-pound increments
+        for (let weight = 100; weight <= 400; weight += 5) {
+            const dailyCalories = weight * CALORIES_PER_POUND;
+
+            // Calculate macronutrients in grams
+            const carbCalories = dailyCalories * CARB_PERCENTAGE;
+            const proteinCalories = dailyCalories * PROTEIN_PERCENTAGE;
+            const fatCalories = dailyCalories * FAT_PERCENTAGE;
+
+            const carbGrams = Math.round(carbCalories / CALORIES_PER_GRAM_CARB);
+            const proteinGrams = Math.round(proteinCalories / CALORIES_PER_GRAM_PROTEIN);
+            const fatGrams = Math.round(fatCalories / CALORIES_PER_GRAM_FAT);
+
+            const row = document.createElement('tr');
+
+            // Weight column
+            const weightCell = document.createElement('td');
+            weightCell.className = 'weight-col';
+            weightCell.textContent = weight;
+            row.appendChild(weightCell);
+
+            // Daily calories column
+            const caloriesCell = document.createElement('td');
+            caloriesCell.className = 'calories-col';
+            caloriesCell.textContent = dailyCalories.toLocaleString();
+            caloriesCell.title = `${weight} lbs × ${CALORIES_PER_POUND} cal/lb = ${dailyCalories} calories`;
+            row.appendChild(caloriesCell);
+
+            // Carbs column
+            const carbsCell = document.createElement('td');
+            carbsCell.className = 'carbs-col';
+            carbsCell.textContent = carbGrams;
+            carbsCell.title = `${carbCalories.toFixed(0)} calories from carbs ÷ 4 = ${carbGrams}g`;
+            row.appendChild(carbsCell);
+
+            // Protein column
+            const proteinCell = document.createElement('td');
+            proteinCell.className = 'protein-col';
+            proteinCell.textContent = proteinGrams;
+            proteinCell.title = `${proteinCalories.toFixed(0)} calories from protein ÷ 4 = ${proteinGrams}g`;
+            row.appendChild(proteinCell);
+
+            // Fat column
+            const fatCell = document.createElement('td');
+            fatCell.className = 'fat-col';
+            fatCell.textContent = fatGrams;
+            fatCell.title = `${fatCalories.toFixed(0)} calories from fat ÷ 9 = ${fatGrams}g`;
+            row.appendChild(fatCell);
+
+            tableBody.appendChild(row);
+        }
+    </script>
+</body>
+</html>
