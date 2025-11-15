@@ -173,6 +173,11 @@
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
+        function secondsToSprintTime(totalSeconds) {
+            // Format for sprint events (400m): display as seconds.hundredths (e.g., 48.00)
+            return totalSeconds.toFixed(2);
+        }
+
         function calculatePace(timeSeconds, distanceMeters) {
             // Calculate pace per 400m for consistency
             const paceSeconds = (timeSeconds / distanceMeters) * 400;
@@ -241,8 +246,8 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="base-time">${m800Time}</td>
-                <td>${secondsToTime(vdotTimes.m400)}</td>
-                <td class="pace">${calculatePace(vdotTimes.m400, M_400)}/400m</td>
+                <td>${secondsToSprintTime(vdotTimes.m400)}</td>
+                <td class="pace">${secondsToSprintTime(vdotTimes.m400)}/400m</td>
                 <td>${secondsToTime(vdotTimes.m1000)}</td>
                 <td class="pace">${calculatePace(vdotTimes.m1000, M_1000)}/400m</td>
                 <td>${secondsToTime(vdotTimes.mile)}</td>
