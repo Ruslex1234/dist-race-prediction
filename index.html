@@ -45,7 +45,7 @@
         
         .cards {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -192,6 +192,19 @@
                     <li>Pace per 400m for each distance</li>
                 </ul>
                 <span class="btn">View Predictions →</span>
+            </a>
+
+            <a href="training_pace_calculator.html" class="card">
+                <div class="card-icon">🎓</div>
+                <h2>Training Pace Calculator</h2>
+                <p>Get your personalized training paces for all workout types based on your race times.</p>
+                <ul class="card-features">
+                    <li>All distances: 400m to Marathon</li>
+                    <li>Easy, Tempo, Threshold, Interval & Rep paces</li>
+                    <li>Based on Jack Daniels' VDOT system</li>
+                    <li>Specific workout examples for each pace</li>
+                </ul>
+                <span class="btn">Calculate Paces →</span>
             </a>
 
             <a href="bmi_calculator.html" class="card">
