@@ -71,8 +71,11 @@
         }
 
         function secondsToTime(totalSeconds) {
+            // Round first to prevent seconds from reaching 60 (e.g., 119.6s → 2:00, not 1:60)
+            totalSeconds = Math.round(totalSeconds);
+
             const mins = Math.floor(totalSeconds / 60);
-            const secs = Math.round(totalSeconds % 60);
+            const secs = totalSeconds % 60;
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
