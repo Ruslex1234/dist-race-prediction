@@ -325,8 +325,9 @@
             // Interval: ~98-100% of VDOT (around 5K pace or slightly faster)
             const intervalPacePerMile = vdotEntry.m5k / 3.10686;
 
-            // Repetition: faster than interval, around mile pace
-            const repetitionPace400m = vdotEntry.m400;
+            // Repetition: For distance runners, use mile pace per 400m (NOT max 400m sprint time)
+            // R pace ≈ current mile race pace per 400m, or interval pace - 6-8 seconds per 400m
+            const repetitionPace400m = vdotEntry.mile / 4.02336; // Mile time divided by 4.02336 (400m per mile)
 
             return {
                 easy: easyPacePerMile,
