@@ -368,80 +368,202 @@
 
             let workoutCards = '';
 
-            // Different workout cards based on distance
-            if (distance === '400m' || distance === '800m' || distance === 'Mile') {
-                // Sprint/middle distance workouts
+            // Calculate race-pace specific intervals
+            const racePace400m = distance === '400m' ? paces.race400m :
+                                 distance === '800m' ? paces.race800m / 2 :
+                                 distance === 'Mile' ? paces.raceMile / 4.02336 :
+                                 distance === '5k' ? paces.race5k / (5000/400) :
+                                 distance === '10k' ? paces.race5k / (5000/400) : // Use 5K pace for 10K intervals
+                                 paces.race5k / (5000/400); // Default to 5K pace
+
+            // Distance-specific workout cards
+            if (distance === '400m') {
+                // 400m SPRINTER workouts
+                const speed200m = paces.race400m * 0.47; // ~47% of 400m time for 200m
+                const speed300m = paces.race400m * 0.72; // ~72% of 400m time for 300m
+                const speedEnd200m = (paces.race400m * 1.10) * 0.47; // Speed endurance 200m
+                const speedEnd300m = (paces.race400m * 1.10) * 0.72; // Speed endurance 300m
+
                 workoutCards = `
                     <div class="pace-card">
                         <h3>Easy Recovery</h3>
-                        <p class="pace-description">60-70% effort • Recovery runs, warm-up, cool-down</p>
+                        <p class="pace-description">60-70% effort • Recovery, warm-up, cool-down</p>
                         <div class="pace-value">${secondsToTime(paces.easy)}/mile</div>
-                        <div class="workout-examples"><strong>Use for:</strong> Easy runs, recovery days, warm-up/cool-down jogs</div>
+                        <div class="workout-examples"><strong>Use for:</strong> Recovery jogs (15-30 min), warm-up (10-15 min), cool-down</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Speed Endurance (200m)</h3>
+                        <p class="pace-description">90-95% max speed • Build lactate tolerance</p>
+                        <div class="pace-value">${secondsToSprintTime(speedEnd200m)}/200m</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 10-12 × 200m with 3-4 min recovery OR 3 sets of 4 × 200m, 2 min rest, 8 min between sets</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Speed Endurance (300m)</h3>
+                        <p class="pace-description">90-95% effort • Special endurance for 400m</p>
+                        <div class="pace-value">${secondsToSprintTime(speedEnd300m)}/300m</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 6-8 × 300m with 5-6 min recovery OR 3 × 3 × 300m, 45 sec rest, 6 min between sets</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Max Speed (Short Sprints)</h3>
+                        <p class="pace-description">95-100% max speed • Pure speed development</p>
+                        <div class="pace-value">${secondsToSprintTime(speed200m)}/200m</div>
+                        <div class="pace-details">150m: ${secondsToSprintTime(speed200m * 0.75)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 6-8 × 150m @ 95-100% with full recovery (6-8 min) OR flying 60-80m sprints</div>
+                    </div>
+                `;
+            } else if (distance === '800m') {
+                // 800m MIDDLE DISTANCE workouts
+                const race200m = (paces.race800m / 2) * 0.48; // 200m at 96% of 800m pace
+                const race300m = (paces.race800m / 2) * 0.73; // 300m at 97% of 800m pace
+                const race600m = (paces.race800m / 2) * 1.47; // 600m at 98% of 800m pace
+
+                workoutCards = `
+                    <div class="pace-card">
+                        <h3>Easy Recovery</h3>
+                        <p class="pace-description">60-70% effort • Recovery and base building</p>
+                        <div class="pace-value">${secondsToTime(paces.easy)}/mile</div>
+                        <div class="workout-examples"><strong>Use for:</strong> Recovery runs (20-40 min), easy days, warm-up/cool-down</div>
                     </div>
 
                     <div class="pace-card">
                         <h3>Tempo/Threshold</h3>
-                        <p class="pace-description">Comfortably hard • Improves lactate threshold</p>
+                        <p class="pace-description">Comfortably hard • Aerobic development</p>
                         <div class="pace-value">${secondsToTime(paces.threshold)}/mile</div>
-                        <div class="workout-examples"><strong>Workout:</strong> 20-30 min continuous tempo or 3-4 × 1 mile @ tempo with 1 min rest</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 20-30 min tempo OR 3-4 × 1 mile @ tempo, 90 sec rest</div>
                     </div>
 
                     <div class="pace-card">
-                        <h3>Race Pace Intervals</h3>
-                        <p class="pace-description">Target race pace practice</p>
-                        <div class="pace-value">${distance === '400m' ? secondsToSprintTime(paces.race400m) : secondsToTime(distance === '800m' ? paces.race800m : paces.raceMile)}</div>
-                        <div class="workout-examples"><strong>Workout:</strong> ${distance === '400m' ? '6-8 × 400m @ race pace, 3-4 min recovery' : distance === '800m' ? '4-6 × 400m @ 800m pace, 90 sec rest' : '6-8 × 400m @ mile pace, 90 sec rest'}</div>
+                        <h3>Race Pace Intervals (400-600m)</h3>
+                        <p class="pace-description">95-100% of 800m race pace</p>
+                        <div class="pace-value">${secondsToSprintTime(racePace400m)}/400m</div>
+                        <div class="pace-details">600m: ${secondsToSprintTime(race600m)} • 300m: ${secondsToSprintTime(race300m)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 4-6 × 400m, 90 sec rest OR 3-4 × 600m @ 95-100% race pace, 3-4 min rest</div>
                     </div>
 
                     <div class="pace-card">
-                        <h3>Speed Repetitions</h3>
-                        <p class="pace-description">Fast, short reps • Improves speed & economy</p>
-                        <div class="pace-value">${secondsToSprintTime(paces.repetition400m)}/400m</div>
-                        <div class="workout-examples"><strong>Workout:</strong> 8-12 × 200m or 6-8 × 300m @ faster than race pace, full recovery</div>
+                        <h3>Speed Reps (200-300m)</h3>
+                        <p class="pace-description">Faster than race pace • Speed development</p>
+                        <div class="pace-value">${secondsToSprintTime(race200m)}/200m</div>
+                        <div class="pace-details">300m: ${secondsToSprintTime(race300m * 0.95)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 10-12 × 200m with 2-3 min recovery OR 6-8 × 300m with 3-4 min recovery</div>
                     </div>
                 `;
-            } else {
-                // Distance running workouts (5K and longer)
+            } else if (distance === 'Mile') {
+                // MILE workouts
+                const race400m = paces.raceMile / 4.02336;
+                const race600m = race400m * 1.48;
+                const race800m = race400m * 1.98;
+                const speed300m = race400m * 0.72;
+
+                workoutCards = `
+                    <div class="pace-card">
+                        <h3>Easy Runs</h3>
+                        <p class="pace-description">60-70% effort • Recovery and base building</p>
+                        <div class="pace-value">${secondsToTime(paces.easy)}/mile</div>
+                        <div class="workout-examples"><strong>Use for:</strong> Recovery runs (25-45 min), easy days, long runs</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Tempo/Threshold</h3>
+                        <p class="pace-description">Comfortably hard • Lactate threshold</p>
+                        <div class="pace-value">${secondsToTime(paces.threshold)}/mile</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 25-35 min tempo OR 4-5 × 1 mile @ tempo, 1-2 min rest</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Race Pace Intervals (400-800m)</h3>
+                        <p class="pace-description">Mile race pace practice</p>
+                        <div class="pace-value">${secondsToSprintTime(race400m)}/400m</div>
+                        <div class="pace-details">800m: ${secondsToTime(race800m)} • 600m: ${secondsToSprintTime(race600m)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 6-8 × 400m, 90 sec rest OR 4-5 × 800m @ mile pace, 2-3 min rest</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Speed Reps</h3>
+                        <p class="pace-description">Faster than mile pace • Speed & economy</p>
+                        <div class="pace-value">${secondsToSprintTime(speed300m)}/300m</div>
+                        <div class="pace-details">200m: ${secondsToSprintTime(speed300m * 0.65)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 8-12 × 200m or 6-8 × 300m faster than mile pace, 2-3 min recovery</div>
+                    </div>
+                `;
+            } else if (distance === '5k' || distance === '10k') {
+                // 5K/10K DISTANCE workouts
+                const interval400m = (paces.race5k / (5000/400)) - 3; // 3-4 sec faster than 5K pace
+                const interval800m = interval400m * 2;
+                const interval1000m = interval400m * 2.5;
+
                 workoutCards = `
                     <div class="pace-card">
                         <h3>Easy Runs</h3>
                         <p class="pace-description">60-70% effort • Recovery, long runs, base building</p>
                         <div class="pace-value">${secondsToTime(paces.easy)}/mile</div>
                         <div class="pace-details">Per km: ${secondsToTime(paces.easy / 1.60934)}</div>
-                        <div class="workout-examples"><strong>Use for:</strong> Recovery runs, easy days, long runs (60-150 min)</div>
+                        <div class="workout-examples"><strong>Use for:</strong> Recovery runs (30-50 min), easy days, long runs (60-90 min)</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Tempo/Threshold</h3>
+                        <p class="pace-description">Comfortably hard • Most important workout for ${distance.toUpperCase()}</p>
+                        <div class="pace-value">${secondsToTime(paces.threshold)}/mile</div>
+                        <div class="pace-details">Per km: ${secondsToTime(paces.threshold / 1.60934)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 20-40 min continuous tempo OR 3-4 × 1.5-2 miles @ threshold, 2 min rest</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>VO2 Max Intervals (400-1200m)</h3>
+                        <p class="pace-description">Just faster than 5K pace • Boosts aerobic capacity</p>
+                        <div class="pace-value">${secondsToTime(paces.interval)}/mile</div>
+                        <div class="pace-details">Per 400m: ${secondsToSprintTime(interval400m)} • Per 1000m: ${secondsToTime(interval1000m)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 8-10 × 400m OR 5-6 × 1000m, equal rest (2-3 min recovery)</div>
+                    </div>
+
+                    <div class="pace-card">
+                        <h3>Speed Reps (Optional)</h3>
+                        <p class="pace-description">Mile pace or faster • Speed & running economy</p>
+                        <div class="pace-value">${secondsToSprintTime(paces.repetition400m)}/400m</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 8-12 × 400m @ mile pace with 2-3 min recovery (use sparingly - focus on threshold!)</div>
+                    </div>
+                `;
+            } else {
+                // HALF MARATHON / MARATHON workouts
+                const interval1000m = (paces.race5k / (5000/1000)) + 5; // Slower than 5K pace
+                const interval1600m = interval1000m * 1.6;
+
+                workoutCards = `
+                    <div class="pace-card">
+                        <h3>Easy Runs</h3>
+                        <p class="pace-description">60-70% effort • Primary training volume</p>
+                        <div class="pace-value">${secondsToTime(paces.easy)}/mile</div>
+                        <div class="pace-details">Per km: ${secondsToTime(paces.easy / 1.60934)}</div>
+                        <div class="workout-examples"><strong>Use for:</strong> Recovery runs, easy days, LONG RUNS (90-180 min). Most important for marathon!</div>
                     </div>
 
                     ${distance === 'Marathon' || distance === 'Half' ? `
                     <div class="pace-card">
-                        <h3>Marathon Pace</h3>
-                        <p class="pace-description">Race pace for marathon training</p>
+                        <h3>Marathon Pace Runs</h3>
+                        <p class="pace-description">Goal race pace • Crucial for marathon training</p>
                         <div class="pace-value">${secondsToTime(paces.marathon)}/mile</div>
                         <div class="pace-details">Per km: ${secondsToTime(paces.marathon / 1.60934)}</div>
-                        <div class="workout-examples"><strong>Workout:</strong> 2-4 × 2 miles @ MP or long runs with MP segments</div>
+                        <div class="workout-examples"><strong>Workout:</strong> Long runs with 6-12 miles @ MP OR 2-4 × 3 miles @ MP, 2 min rest</div>
                     </div>` : ''}
 
                     <div class="pace-card">
-                        <h3>Tempo/Threshold</h3>
-                        <p class="pace-description">Comfortably hard • Improves lactate threshold</p>
+                        <h3>Tempo/Threshold (MOST IMPORTANT!)</h3>
+                        <p class="pace-description">Comfortably hard • The #1 workout for marathon success</p>
                         <div class="pace-value">${secondsToTime(paces.threshold)}/mile</div>
                         <div class="pace-details">Per km: ${secondsToTime(paces.threshold / 1.60934)}</div>
-                        <div class="workout-examples"><strong>Workout:</strong> 20-40 min continuous tempo or 2-3 × 2 miles @ tempo, 2 min rest</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 30-60 min continuous tempo OR 2-3 × 3 miles @ threshold, 2-3 min rest</div>
                     </div>
 
                     <div class="pace-card">
-                        <h3>Interval/VO2 Max</h3>
-                        <p class="pace-description">Hard effort • Improves VO2 max, 3-5 min intervals</p>
+                        <h3>Intervals (Secondary Workout)</h3>
+                        <p class="pace-description">Optional speed work • Not primary focus for marathon</p>
                         <div class="pace-value">${secondsToTime(paces.interval)}/mile</div>
-                        <div class="pace-details">Per km: ${secondsToTime(paces.interval / 1.60934)} • Per 400m: ${secondsToTime(paces.interval / 4.02336)}</div>
-                        <div class="workout-examples"><strong>Workout:</strong> 5-6 × 1000m or 8-10 × 400m, equal rest/recovery</div>
-                    </div>
-
-                    <div class="pace-card">
-                        <h3>Repetition</h3>
-                        <p class="pace-description">Fast reps • Improves speed & running economy</p>
-                        <div class="pace-value">${secondsToSprintTime(paces.repetition400m)}/400m</div>
-                        <div class="pace-details">Faster than interval pace</div>
-                        <div class="workout-examples"><strong>Workout:</strong> 10-12 × 400m or 6-8 × 600m, full recovery (2-3 min)</div>
+                        <div class="pace-details">Per 1000m: ${secondsToTime(interval1000m)} • Per mile: ${secondsToTime(interval1600m)}</div>
+                        <div class="workout-examples"><strong>Workout:</strong> 5-6 × 1000m OR 4-5 × 1 mile (use sparingly - threshold is more important!)</div>
                     </div>
                 `;
             }
